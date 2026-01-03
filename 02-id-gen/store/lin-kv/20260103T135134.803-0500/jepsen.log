@@ -1,0 +1,248 @@
+2026-01-03 13:51:34,817{GMT}	INFO	[jepsen test runner] jepsen.core: Command line:
+lein run test unique-ids --bin ./id-gen --time-limit 30 --rate 1000 --node-count 3 --availability total --nemesis partition
+2026-01-03 13:51:34,875{GMT}	INFO	[jepsen test runner] jepsen.core: Running test:
+{:args ["unique-ids"]
+ :remote
+ #jepsen.control.retry.Remote{:remote #jepsen.control.scp.Remote{:cmd-remote #jepsen.control.sshj.SSHJRemote{:concurrency-limit 6,
+                                                                                                             :conn-spec nil,
+                                                                                                             :client nil,
+                                                                                                             :semaphore nil},
+                                                                 :conn-spec nil},
+                              :conn nil}
+ :log-net-send false
+ :node-count 3
+ :availability :total
+ :max-txn-length 4
+ :concurrency 3
+ :db
+ #object[maelstrom.db$db$reify__16612
+         "0x37a5ac85"
+         "maelstrom.db$db$reify__16612@37a5ac85"]
+ :max-writes-per-key 16
+ :leave-db-running? false
+ :name "lin-kv"
+ :logging-json? false
+ :start-time
+ #object[org.joda.time.DateTime "0x5d4f0fd5" "2026-01-03T13:51:34.803-05:00"]
+ :nemesis-interval 10
+ :net
+ #object[maelstrom.net$jepsen_net$reify__15721
+         "0x2092b072"
+         "maelstrom.net$jepsen_net$reify__15721@2092b072"]
+ :client
+ #object[maelstrom.workload.lin_kv$client$reify__20973
+         "0x504521ae"
+         "maelstrom.workload.lin_kv$client$reify__20973@504521ae"]
+ :barrier
+ #object[java.util.concurrent.CyclicBarrier
+         "0x4a9e6ea7"
+         "java.util.concurrent.CyclicBarrier@4a9e6ea7"]
+ :log-stderr false
+ :pure-generators true
+ :ssh {:dummy? true}
+ :rate 1000.0
+ :checker
+ #object[jepsen.checker$compose$reify__11089
+         "0x6f8af186"
+         "jepsen.checker$compose$reify__11089@6f8af186"]
+ :argv
+ ("test"
+  "unique-ids"
+  "--bin"
+  "./id-gen"
+  "--time-limit"
+  "30"
+  "--rate"
+  "1000"
+  "--node-count"
+  "3"
+  "--availability"
+  "total"
+  "--nemesis"
+  "partition")
+ :nemesis
+ (jepsen.nemesis.ReflCompose
+  {:fm {:start-partition 0,
+        :stop-partition 0,
+        :kill 1,
+        :start 1,
+        :pause 1,
+        :resume 1},
+   :nemeses [#unprintable "jepsen.nemesis.combined$partition_nemesis$reify__16905@5aaecd25"
+             #unprintable "jepsen.nemesis.combined$db_nemesis$reify__16886@239fdf8f"]})
+ :nodes ["n0" "n1" "n2"]
+ :test-count 1
+ :latency {:mean 0, :dist :constant}
+ :bin "./id-gen"
+ :generator
+ #object[jepsen.util.Forgettable
+         "0x36cc6055"
+         (jepsen.generator.TimeLimit
+          {:limit 30000000000,
+           :cutoff nil,
+           :gen (jepsen.generator.Any
+                 {:gens [(jepsen.generator.OnThreads
+                          {:f #{:nemesis},
+                           :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__12077
+                                                   "0x6a7c1725"
+                                                   "jepsen.generator.context$make_thread_filter$lazy_filter__12077@6a7c1725"],
+                           :gen (jepsen.generator.Stagger
+                                 {:dt 20000000000,
+                                  :next-time nil,
+                                  :gen (jepsen.generator.FlipFlop
+                                        {:gens [#object[jepsen.nemesis.combined$partition_package$start__16909
+                                                        "0x756476a3"
+                                                        "jepsen.nemesis.combined$partition_package$start__16909@756476a3"]
+                                                (jepsen.generator.Repeat
+                                                 {:remaining -1,
+                                                  :gen {:type :info,
+                                                        :f :stop-partition,
+                                                        :value nil}})],
+                                         :i 0})})})
+                         (jepsen.generator.OnThreads
+                          {:f #jepsen.generator.context.AllBut{:element :nemesis},
+                           :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__12077
+                                                   "0x65e4ee59"
+                                                   "jepsen.generator.context$make_thread_filter$lazy_filter__12077@65e4ee59"],
+                           :gen (jepsen.generator.Stagger
+                                 {:dt 2000000,
+                                  :next-time nil,
+                                  :gen (jepsen.generator.OnThreads
+                                        {:f #jepsen.generator.context.AllBut{:element :nemesis},
+                                         :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__12077
+                                                                 "0x4746d52d"
+                                                                 "jepsen.generator.context$make_thread_filter$lazy_filter__12077@4746d52d"],
+                                         :gen (jepsen.independent.ConcurrentGenerator
+                                               {:n 6,
+                                                :fgen #object[jepsen.tests.linearizable_register$test$fn__17385
+                                                              "0x4d0927df"
+                                                              "jepsen.tests.linearizable_register$test$fn__17385@4d0927df"],
+                                                :group->threads nil,
+                                                :thread->group nil,
+                                                :group->context-filter nil,
+                                                :keys (0 1 2 3 4 5 6 7 ...),
+                                                :gens nil})})})})]})})]
+ :log-net-recv false
+ :os
+ #object[maelstrom.net$jepsen_os$reify__15724
+         "0x59da32ad"
+         "maelstrom.net$jepsen_os$reify__15724@59da32ad"]
+ :time-limit 30
+ :workload :lin-kv
+ :consistency-models [:strict-serializable]
+ :topology :grid}
+
+2026-01-03 13:51:36,207{GMT}	INFO	[jepsen node n0] maelstrom.net: Starting Maelstrom network
+2026-01-03 13:51:36,208{GMT}	INFO	[jepsen test runner] jepsen.db: Tearing down DB
+2026-01-03 13:51:36,209{GMT}	INFO	[jepsen test runner] jepsen.db: Setting up DB
+2026-01-03 13:51:36,210{GMT}	INFO	[jepsen node n1] maelstrom.db: Setting up n1
+2026-01-03 13:51:36,210{GMT}	INFO	[jepsen node n1] maelstrom.process: launching ./id-gen ["unique-ids"]
+2026-01-03 13:51:36,210{GMT}	INFO	[jepsen node n2] maelstrom.db: Setting up n2
+2026-01-03 13:51:36,211{GMT}	INFO	[jepsen node n2] maelstrom.process: launching ./id-gen ["unique-ids"]
+2026-01-03 13:51:36,211{GMT}	INFO	[jepsen node n0] maelstrom.service: Starting services: (lin-kv lin-tso lww-kv seq-kv)
+2026-01-03 13:51:36,212{GMT}	INFO	[jepsen node n0] maelstrom.db: Setting up n0
+2026-01-03 13:51:36,212{GMT}	INFO	[jepsen node n0] maelstrom.process: launching ./id-gen ["unique-ids"]
+2026-01-03 13:51:36,227{GMT}	INFO	[jepsen test runner] jepsen.core: Relative time begins now
+2026-01-03 13:51:36,266{GMT}	INFO	[jepsen node n1] maelstrom.db: Tearing down n1
+2026-01-03 13:51:36,266{GMT}	INFO	[jepsen node n0] maelstrom.db: Tearing down n0
+2026-01-03 13:51:36,266{GMT}	INFO	[jepsen node n2] maelstrom.db: Tearing down n2
+2026-01-03 13:51:38,217{GMT}	INFO	[jepsen node n0] maelstrom.net: Shutting down Maelstrom network
+2026-01-03 13:51:38,220{GMT}	WARN	[jepsen test runner] jepsen.core: Test crashed!
+clojure.lang.ExceptionInfo: Generator threw java.lang.AssertionError - Assert failed: With 3 worker threads, this jepsen.concurrent/concurrent-generator cannot run a key with 6 threads concurrently. Consider raising your test's :concurrency to at least 6.
+(<= group-size thread-count) when asked for an operation. Generator:
+jepsen.generator.TimeLimit{
+  :limit 30000000000,
+  :cutoff nil,
+  :gen jepsen.generator.Any{
+    :gens [jepsen.generator.OnThreads{
+             :f #{:nemesis},
+             :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__12077 0x6a7c1725 "jepsen.generator.context$make_thread_filter$lazy_filter__12077@6a7c1725"],
+             :gen jepsen.generator.Stagger{
+               :dt 20000000000,
+               :next-time nil,
+               :gen jepsen.generator.FlipFlop{
+                 :gens [#object[jepsen.nemesis.combined$partition_package$start__16909 0x756476a3 "jepsen.nemesis.combined$partition_package$start__16909@756476a3"]
+                        jepsen.generator.Repeat{
+                          :remaining -1,
+                          :gen {:type :info,
+                                :f :stop-partition,
+                                :value nil}}],
+                 :i 0}}}
+           jepsen.generator.OnThreads{
+             :f {:element :nemesis},
+             :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__12077 0x65e4ee59 "jepsen.generator.context$make_thread_filter$lazy_filter__12077@65e4ee59"],
+             :gen jepsen.generator.Stagger{
+               :dt 2000000,
+               :next-time nil,
+               :gen jepsen.generator.OnThreads{
+                 :f {:element :nemesis},
+                 :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__12077 0x4746d52d "jepsen.generator.context$make_thread_filter$lazy_filter__12077@4746d52d"],
+                 :gen jepsen.independent.ConcurrentGenerator{
+                   :n 6,
+                   :fgen #object[jepsen.tests.linearizable_register$test$fn__17385 0x4d0927df "jepsen.tests.linearizable_register$test$fn__17385@4d0927df"],
+                   :group->threads nil,
+                   :thread->group nil,
+                   :group->context-filter nil,
+                   :keys (0 1 2 3 4 5 6 7 8 9 ...),
+                   :gens nil}}}}]}}
+
+Context:
+
+{:time 5968233,
+ :next-thread-index 0,
+ :translation-table
+ {:int-thread-count 3,
+  :named-threads [:nemesis],
+  :named-thread->index {:nemesis 0}},
+ :all-threads #{0 1 2 3},
+ :free-threads #{0 1 2 3},
+ :thread-index->process [0 1 2 :nemesis],
+ :process->thread {0 0, 1 1, 2 2, :nemesis :nemesis},
+ :ext-map {}}
+
+	at slingshot.support$stack_trace.invoke(support.clj:201)
+	at jepsen.generator.FriendlyExceptions.op(generator.clj:716)
+	at jepsen.generator.Validate.op(generator.clj:655)
+	at jepsen.generator.interpreter$run_BANG_.invokeStatic(interpreter.clj:262)
+	at jepsen.generator.interpreter$run_BANG_.invoke(interpreter.clj:184)
+	at jepsen.core$run_case_BANG_.invokeStatic(core.clj:213)
+	at jepsen.core$run_case_BANG_.invoke(core.clj:208)
+	at jepsen.core$run_BANG_$fn__13912$fn__13915$fn__13920.invoke(core.clj:402)
+	at jepsen.core$run_BANG_$fn__13912$fn__13915.invoke(core.clj:400)
+	at jepsen.core$run_BANG_$fn__13912.invoke(core.clj:398)
+	at jepsen.core$run_BANG_.invokeStatic(core.clj:396)
+	at jepsen.core$run_BANG_.invoke(core.clj:322)
+	at jepsen.cli$single_test_cmd$fn__15082.invoke(cli.clj:396)
+	at jepsen.cli$run_BANG_.invokeStatic(cli.clj:329)
+	at jepsen.cli$run_BANG_.invoke(cli.clj:258)
+	at maelstrom.core$_main.invokeStatic(core.clj:269)
+	at maelstrom.core$_main.doInvoke(core.clj:267)
+	at clojure.lang.RestFn.applyTo(RestFn.java:140)
+	at maelstrom.core.main(Unknown Source)
+Caused by: java.lang.AssertionError: Assert failed: With 3 worker threads, this jepsen.concurrent/concurrent-generator cannot run a key with 6 threads concurrently. Consider raising your test's :concurrency to at least 6.
+(<= group-size thread-count)
+	at jepsen.independent$group_threads.invokeStatic(independent.clj:63)
+	at jepsen.independent$group_threads.invoke(independent.clj:55)
+	at jepsen.independent$make_group__GT_threads.invokeStatic(independent.clj:88)
+	at jepsen.independent$make_group__GT_threads.invoke(independent.clj:84)
+	at jepsen.independent.ConcurrentGenerator.op(independent.clj:132)
+	at jepsen.generator.OnThreads.op(generator.clj:885)
+	at jepsen.generator.Stagger.op(generator.clj:1406)
+	at jepsen.generator.OnThreads.op(generator.clj:885)
+	at jepsen.generator.Any$fn__12505.invoke(generator.clj:956)
+	at clojure.core$map_indexed$mapi__8680$fn__8681.invoke(core.clj:7500)
+	at clojure.lang.LazySeq.force(LazySeq.java:50)
+	at clojure.lang.LazySeq.realize(LazySeq.java:89)
+	at clojure.lang.LazySeq.seq(LazySeq.java:106)
+	at clojure.lang.RT.seq(RT.java:555)
+	at clojure.core$seq__5486.invokeStatic(core.clj:139)
+	at clojure.core.protocols$seq_reduce.invokeStatic(protocols.clj:24)
+	at clojure.core.protocols$fn__8262.invokeStatic(protocols.clj:74)
+	at clojure.core.protocols$fn__8262.invoke(protocols.clj:74)
+	at clojure.core.protocols$fn__8203$G__8198__8216.invoke(protocols.clj:13)
+	at clojure.core$reduce.invokeStatic(core.clj:6965)
+	at clojure.core$reduce.invoke(core.clj:6947)
+	at jepsen.generator.Any.op(generator.clj:960)
+	at jepsen.generator.TimeLimit.op(generator.clj:1380)
+	at jepsen.generator.FriendlyExceptions.op(generator.clj:713)
+	... 17 common frames omitted
