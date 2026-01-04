@@ -8,8 +8,9 @@ import (
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
 )
 
-var messages = []int{}
+var messages = map[int]struct{}{}
 var mu sync.Mutex
+var neighbors = []string{}
 
 func main() {
 	n := maelstrom.NewNode()
@@ -25,9 +26,9 @@ func main() {
 
 type (
 	topologyRequest struct {
-		Type  string         `json:"type"`
-		MsgID any            `json:"msg_id"`
-		Topo  map[string]any `json:"topology"`
+		Type  string              `json:"type"`
+		MsgID any                 `json:"msg_id"`
+		Topo  map[string][]string `json:"topology"`
 	}
 
 	topologyResponse struct {
@@ -42,6 +43,12 @@ func topologyHandler(n *maelstrom.Node) func(maelstrom.Message) error {
 		if err := json.Unmarshal(msg.Body, &body); err != nil {
 			return err
 		}
+
+		// Topology tells us our neighbors
+		// e.g., body.Topo["n1"] = ["n2", "n3"]
+		neighbors = body.Topo[n.ID()]
+
+		log.Printf("Received topology: %+v", body.Topo)
 
 		return n.Reply(msg, topologyResponse{
 			Type:  "topology_ok",
@@ -71,8 +78,10 @@ func readHandler(n *maelstrom.Node) func(maelstrom.Message) error {
 		}
 
 		mu.Lock()
-		messagesCopy := make([]int, len(messages))
-		copy(messagesCopy, messages)
+		messagesCopy := make([]int, 0, len(messages))
+		for msg := range messages {
+			messagesCopy = append(messagesCopy, msg)
+		}
 		mu.Unlock()
 
 		return n.Reply(msg, readResponse{
@@ -98,18 +107,19 @@ type (
 
 func broadcastHandler(n *maelstrom.Node) func(maelstrom.Message) error {
 	return func(msg maelstrom.Message) error {
-
 		var body broadcastBody
 		if err := json.Unmarshal(msg.Body, &body); err != nil {
 			return err
 		}
 
 		mu.Lock()
-		messages = append(messages, int(body.Message))
+		messages[int(body.Message)] = struct{}{}
 		mu.Unlock()
 
-		for _, id := range n.NodeIDs() {
-			if n.ID() == id {
+		// Forward to neighbors
+		// Skip sending to direct neighbor that sent the message to avoid loops
+		for _, id := range neighbors {
+			if id == msg.Src {
 				continue
 			}
 
