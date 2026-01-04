@@ -1,5 +1,0 @@
-2026/01/03 14:01:25 Received {c0 n1 {"type":"init","node_id":"n1","node_ids":["n0","n1","n2"],"msg_id":1}}
-2026/01/03 14:01:25 Node n1 initialized
-2026/01/03 14:01:25 Sent {"src":"n1","dest":"c0","body":{"in_reply_to":1,"type":"init_ok"}}
-2026/01/03 14:01:25 Received {c7 n1 {"key":0,"type":"read","msg_id":1}}
-2026/01/03 14:01:25 No handler for {"id":7,"src":"c7","dest":"n1","body":{"key":0,"type":"read","msg_id":1}}
