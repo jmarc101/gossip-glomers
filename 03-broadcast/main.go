@@ -1,16 +1,21 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"sync"
+	"time"
 
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
 )
 
-var messages = map[int]struct{}{}
-var mu sync.Mutex
-var neighbors = []string{}
+var (
+	messages            = map[int]struct{}{}
+	mu                  sync.Mutex
+	neighbors           = []string{}
+	broadcastRetryCount = 25
+)
 
 func main() {
 	n := maelstrom.NewNode()
@@ -123,10 +128,20 @@ func broadcastHandler(n *maelstrom.Node) func(maelstrom.Message) error {
 				continue
 			}
 
-			err := n.Send(id, body)
-			if err != nil {
-				log.Fatalf(err.Error())
-			}
+			// This function is just a simple retry mechanism without backoff
+			// in a real system we would want to implement exponential backoff and jitter
+			// to avoid overwhelming the network. Here we keep simple given context.
+			go func(retryCount int) {
+				for range retryCount {
+					ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+					defer cancel()
+
+					msg, err := n.SyncRPC(ctx, id, body)
+					if err == nil || msg.Type() == "broadcast_ok" {
+						break
+					}
+				}
+			}(broadcastRetryCount)
 		}
 
 		return n.Reply(msg, broadcastResponse{
